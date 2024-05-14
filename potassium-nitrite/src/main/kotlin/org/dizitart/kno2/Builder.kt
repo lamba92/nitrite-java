@@ -44,8 +44,7 @@ class Builder internal constructor() {
     var schemaVersion: Int = 0
 
     /**
-     * The field separator used by the Nitrite database. By default, it is set to the field
-     * separator defined in the Nitrite configuration.
+     * The field separator used by the Nitrite database. By default, it is set to `.`.
      */
     var fieldSeparator: String = NitriteConfig.getFieldSeparator()
 

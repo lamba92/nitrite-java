@@ -110,7 +110,7 @@ public class DataGenerator {
         product.setProductName(faker.name().name());
         product.setProductId(randomProductId());
         product.setManufacturer(randomManufacturer());
-        product.setPrice(Double.parseDouble(faker.commerce().price()));
+        product.setPrice(Double.parseDouble(faker.commerce().price().replace(",", ".")));
         return product;
     }
 

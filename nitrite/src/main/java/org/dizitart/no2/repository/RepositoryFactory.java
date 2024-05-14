@@ -136,7 +136,7 @@ public class RepositoryFactory {
         NitriteMapper nitriteMapper = nitriteConfig.nitriteMapper();
         NitriteStore<?> store = nitriteConfig.getNitriteStore();
 
-        validateRepositoryType(type, nitriteMapper);
+        // validateRepositoryType(type, nitriteMapper);
 
         if (store.getCollectionNames().contains(collectionName)) {
             throw new ValidationException("A collection with same entity name already exists");

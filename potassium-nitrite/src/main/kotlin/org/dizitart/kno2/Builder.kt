@@ -19,13 +19,9 @@ package org.dizitart.kno2
 import org.dizitart.no2.Nitrite
 import org.dizitart.no2.NitriteBuilder
 import org.dizitart.no2.NitriteConfig
-import org.dizitart.no2.common.Constants
 import org.dizitart.no2.common.mapper.EntityConverter
-import org.dizitart.no2.common.mapper.NitriteMapper
 import org.dizitart.no2.common.module.NitriteModule
-import org.dizitart.no2.common.module.NitriteModule.module
 import org.dizitart.no2.migration.Migration
-import org.dizitart.no2.spatial.SpatialIndexer
 
 /**
  * A builder class for creating instances of [Nitrite].
@@ -47,6 +43,23 @@ class Builder internal constructor() {
      * The field separator used by the Nitrite database. By default, it is set to `.`.
      */
     var fieldSeparator: String = NitriteConfig.getFieldSeparator()
+
+    /**
+     * Enables/disables the repository type validation for the Nitrite database.
+     * <p>
+     * Repository type validation is a feature in Nitrite that ensures the type of the objects
+     * stored in the repository can be converted to and from [org.dizitart.no2.collection.Document].
+     * <p>
+     * By default, the repository type validation is enabled. If you disable it, and if you try to
+     * store an object that cannot be converted to a [org.dizitart.no2.collection.Document],
+     * then Nitrite will throw an exception during the operation.
+     *
+     * @see org.dizitart.no2.collection.Document
+     * @see org.dizitart.no2.repository.ObjectRepository
+     * @see org.dizitart.no2.common.mapper.EntityConverter
+     * @since 4.3.0
+     */
+    var repositoryValidation = true
 
     /**
      * Loads a [NitriteModule] into the Nitrite database. The module can be used to extend the
@@ -85,6 +98,10 @@ class Builder internal constructor() {
 
         if (schemaVersion > 0) {
             builder.schemaVersion(schemaVersion)
+        }
+
+        if (!repositoryValidation) {
+            builder.disableRepositoryTypeValidation()
         }
 
         if (entityConverters.isNotEmpty()) {

@@ -20,16 +20,20 @@ import java.nio.file.Files
 import java.nio.file.Paths
 import junit.framework.TestCase.assertEquals
 import junit.framework.TestCase.assertSame
+import kotlin.io.path.Path
+import kotlin.io.path.deleteIfExists
 import kotlin.random.Random
+import kotlinx.datetime.Clock
+import kotlinx.datetime.Instant
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import org.dizitart.kno2.filters.eq
 import org.dizitart.kno2.serialization.DocumentFormat
-import org.dizitart.kno2.serialization.DocumentFormat.Default.encodeToDocument
 import org.dizitart.kno2.serialization.KotlinXSerializationMapper
 import org.dizitart.kno2.serialization.decodeFromDocument
 import org.dizitart.kno2.serialization.encodeToDocument
-import org.dizitart.no2.collection.Document
 import org.dizitart.no2.common.module.NitriteModule.module
+import org.dizitart.no2.exceptions.ValidationException
 import org.dizitart.no2.mvstore.MVStoreModule
 import org.junit.Test
 import org.slf4j.LoggerFactory
@@ -158,25 +162,20 @@ class KotlinXSerializationMapperTest {
 
     @Test
     fun testModule() {
-        val documentFormat = DocumentFormat {
-            allowStructuredMapKeys = true
-        }
+        val documentFormat = DocumentFormat { allowStructuredMapKeys = true }
         val db = nitrite {
+            repositoryValidation = false
             loadModule(MVStoreModule(dbPath))
             loadModule(KotlinXSerializationMapper(documentFormat))
         }
 
         val repo = db.getRepository<TestData>()
         repo.insert(testData)
-        repo.find { a -> a.second.get("_id") == testData.id }.firstOrNull().also {
-            assertEquals(it, testData)
-        }
+        repo.find { a -> a.second.get("_id") == testData.id }
+            .firstOrNull()
+            .also { assertEquals(it, testData) }
         db.close()
-        try {
-            Files.delete(Paths.get(dbPath))
-        } catch (e: Exception) {
-            log.error("Failed to delete db file", e)
-        }
+        Path(dbPath).deleteIfExists()
     }
 
     @Test
@@ -188,4 +187,43 @@ class KotlinXSerializationMapperTest {
         testData.someArray.forEachIndexed { index, s -> assertEquals(decodedObject.someArray[index], s) }
         assertEquals(testData, decodedObject.copy(someArray = testData.someArray))
     }
+
+    @Test(expected = ValidationException::class)
+    fun testRepositoryValidationFailsWithKotlinx() {
+        val db = nitrite {
+            loadModule(MVStoreModule(dbPath))
+            loadModule(KotlinXSerializationMapper)
+        }
+
+        val repo = db.getRepository<CacheEntry>()
+        repo.insert(CacheEntry("sha256"))
+        repo.find(CacheEntry::sha256 eq "sha256")
+            .firstOrNull()
+            .also { assertEquals(it?.sha256, "sha256") }
+        db.close()
+        Path(dbPath).deleteIfExists()
+    }
+
+    @Test
+    fun testRepositoryValidationDisabled() {
+        val db = nitrite {
+            repositoryValidation = false
+            loadModule(MVStoreModule(dbPath))
+            loadModule(KotlinXSerializationMapper)
+        }
+
+        val repo = db.getRepository<CacheEntry>()
+        repo.insert(CacheEntry("sha256", Clock.System.now()))
+        repo.find(CacheEntry::sha256 eq "sha256")
+            .firstOrNull()
+            .also { assertEquals(it?.sha256, "sha256") }
+        db.close()
+        Path(dbPath).deleteIfExists()
+    }
 }
+
+@Serializable
+data class CacheEntry(
+    val sha256: String,
+    val lastUpdated: Instant = Clock.System.now(),
+)

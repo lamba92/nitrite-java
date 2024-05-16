@@ -31,6 +31,7 @@ dependencies {
     testImplementation(libs.org.apache.logging.log4j.log4j.api)
     testImplementation(libs.org.apache.logging.log4j.log4j.slf4j2.impl)
     testImplementation(libs.org.apache.logging.log4j.log4j.core)
+    testImplementation(libs.org.jetbrains.kotlinx.kotlinx.datetime)
     compileOnly(libs.org.projectlombok.lombok)
 }
 

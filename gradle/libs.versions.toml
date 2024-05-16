@@ -34,6 +34,7 @@ org-slf4j-slf4j-api = "2.0.13"
 org-threeten-threetenbp = "1.6.9"
 org-yaml-snakeyaml = "2.2"
 uk-co-jemos-podam-podam = "8.0.1.RELEASE"
+kotlinx-datetime = "0.6.0"
 
 [libraries]
 com-esotericsoftware-kryo-kryo5 = { module = "com.esotericsoftware.kryo:kryo5", version.ref = "com-esotericsoftware-kryo-kryo5" }
@@ -59,6 +60,7 @@ org-jetbrains-kotlin-kotlin-reflect = { module = "org.jetbrains.kotlin:kotlin-re
 org-jetbrains-kotlin-kotlin-stdlib = { module = "org.jetbrains.kotlin:kotlin-stdlib", version.ref = "org-jetbrains-kotlin-kotlin-stdlib" }
 org-jetbrains-kotlin-kotlin-test-junit = { module = "org.jetbrains.kotlin:kotlin-test-junit", version.ref = "org-jetbrains-kotlin-kotlin-test-junit" }
 org-jetbrains-kotlinx-kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "org-jetbrains-kotlinx-kotlinx-serialization-json" }
+org-jetbrains-kotlinx-kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "kotlinx-datetime" }
 org-locationtech-jts-jts-core = { module = "org.locationtech.jts:jts-core", version.ref = "org-locationtech-jts-jts-core" }
 org-meanbean-meanbean = { module = "org.meanbean:meanbean", version.ref = "org-meanbean-meanbean" }
 org-mockito-mockito-core = { module = "org.mockito:mockito-core", version.ref = "org-mockito-mockito-core" }

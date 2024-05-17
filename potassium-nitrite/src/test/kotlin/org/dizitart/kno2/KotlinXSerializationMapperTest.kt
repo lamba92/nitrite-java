@@ -25,6 +25,7 @@ import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.SerializationException
 import org.dizitart.kno2.filters.eq
 import org.dizitart.kno2.serialization.DocumentFormat
 import org.dizitart.kno2.serialization.KotlinXSerializationMapper
@@ -216,6 +217,34 @@ class KotlinXSerializationMapperTest {
             .also { assertEquals(it?.sha256, "sha256") }
         db.close()
         Path(dbPath).deleteIfExists()
+    }
+
+
+    @Test(expected = SerializationException::class)
+    fun `should fail with deep put enabled`() {
+        val documentFormat = DocumentFormat { allowDeepPut = true }
+        val document = documentFormat.encodeToDocument(AClass.create())
+        val decodedObject = documentFormat.decodeFromDocument<AClass>(document)
+    }
+
+    @Test(expected = SerializationException::class)
+    fun `should succeed with deep put disabled`() {
+        val documentFormat = DocumentFormat { allowDeepPut = false }
+        val document = documentFormat.encodeToDocument(AClass.create())
+        val decodedObject = documentFormat.decodeFromDocument<AClass>(document)
+    }
+}
+
+@Serializable
+data class AClass(
+    val aString: String,
+    val aMap: Map<String, String>,
+) {
+    companion object {
+        fun create() = AClass(
+            aString = "aString",
+            aMap = mapOf("the.key.to.split" to "aValue")
+        )
     }
 }
 

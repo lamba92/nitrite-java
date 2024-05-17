@@ -21,6 +21,7 @@ class DocumentFormatBuilder internal constructor(from: DocumentFormatConfigurati
     var namingStrategy: JsonNamingStrategy? = from.namingStrategy
     var decodeEnumsCaseInsensitive: Boolean = from.decodeEnumsCaseInsensitive
     var serializersModule: SerializersModule = EmptySerializersModule()
+    var allowDeepPut: Boolean = from.allowDeepPut
 
     data class Built(
         val configuration: DocumentFormatConfiguration,

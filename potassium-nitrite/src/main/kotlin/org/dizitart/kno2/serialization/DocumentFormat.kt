@@ -16,6 +16,7 @@ import kotlinx.serialization.serializer
 import org.dizitart.kno2.component1
 import org.dizitart.kno2.component2
 import org.dizitart.no2.collection.Document
+import org.dizitart.no2.collection.NitriteId
 import org.dizitart.no2.exceptions.ObjectMappingException
 
 
@@ -121,6 +122,7 @@ private fun Any?.toJsonElement(): JsonElement = when (this) {
     is Number -> JsonPrimitive(this)
     is Boolean -> JsonPrimitive(this)
     is Document -> toJsonObject()
+    is NitriteId -> JsonPrimitive(this.idValue)
     is List<*> -> JsonArray(map { it.toJsonElement() })
     is Map<*, *> -> JsonObject(checkKeysAreString().mapValues { (_, value) -> value.toJsonElement() })
     is Enum<*> -> JsonPrimitive(this.name)

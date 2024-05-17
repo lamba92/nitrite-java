@@ -20,7 +20,6 @@ import junit.framework.TestCase.assertEquals
 import junit.framework.TestCase.assertSame
 import kotlin.io.path.Path
 import kotlin.io.path.deleteIfExists
-import kotlin.random.Random
 import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
 import kotlinx.serialization.SerialName
@@ -31,6 +30,7 @@ import org.dizitart.kno2.serialization.DocumentFormat
 import org.dizitart.kno2.serialization.KotlinXSerializationMapper
 import org.dizitart.kno2.serialization.decodeFromDocument
 import org.dizitart.kno2.serialization.encodeToDocument
+import org.dizitart.no2.collection.NitriteId
 import org.dizitart.no2.exceptions.ValidationException
 import org.dizitart.no2.mvstore.MVStoreModule
 import org.junit.Test
@@ -50,7 +50,7 @@ class KotlinXSerializationMapperTest {
         val someMap: Map<String, String>,
         val someSerializableObjectMap: Map<InnerObject, SomePolymorphType>,
         val innerObject: InnerObject,
-        @SerialName("_id") val id: String? = null,
+        @SerialName("_id") val id: SerializableNitriteId? = null,
         val valueClass: SomeValueClass,
         val someInt: Int,
         val someDouble: Double,
@@ -119,7 +119,7 @@ class KotlinXSerializationMapperTest {
         someMap = mapOf("testkey" to "testvalue", "test1" to "test2"),
         someSerializableObjectMap = mapOf(TestData.InnerObject("test") to TestData.SomePolymorphType.SomeTypeA),
         innerObject = TestData.InnerObject("someValue"),
-        id = Random.nextLong().toString(),
+        id = NitriteId.newId(),
         valueClass = TestData.SomeValueClass("someString"),
         someInt = 1,
         someDouble = 1.0,
@@ -169,7 +169,7 @@ class KotlinXSerializationMapperTest {
 
         val repo = db.getRepository<TestData>()
         repo.insert(testData)
-        repo.find { a -> a.second.get("_id") == testData.id }
+        repo.find { (id, _) -> id == testData.id }
             .firstOrNull()
             .also { assertEquals(it, testData) }
         db.close()
@@ -224,14 +224,14 @@ class KotlinXSerializationMapperTest {
     fun `should fail with deep put enabled`() {
         val documentFormat = DocumentFormat { allowDeepPut = true }
         val document = documentFormat.encodeToDocument(AClass.create())
-        val decodedObject = documentFormat.decodeFromDocument<AClass>(document)
+        documentFormat.decodeFromDocument<AClass>(document)
     }
 
     @Test(expected = SerializationException::class)
     fun `should succeed with deep put disabled`() {
         val documentFormat = DocumentFormat { allowDeepPut = false }
         val document = documentFormat.encodeToDocument(AClass.create())
-        val decodedObject = documentFormat.decodeFromDocument<AClass>(document)
+        documentFormat.decodeFromDocument<AClass>(document)
     }
 }
 

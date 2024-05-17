@@ -59,7 +59,7 @@ class Builder internal constructor() {
      * @see org.dizitart.no2.common.mapper.EntityConverter
      * @since 4.3.0
      */
-    var repositoryValidation = true
+    var validateRepositories = true
 
     /**
      * Loads a [NitriteModule] into the Nitrite database. The module can be used to extend the
@@ -100,7 +100,7 @@ class Builder internal constructor() {
             builder.schemaVersion(schemaVersion)
         }
 
-        if (!repositoryValidation) {
+        if (!validateRepositories) {
             builder.disableRepositoryTypeValidation()
         }
 

@@ -16,8 +16,6 @@
 
 package org.dizitart.kno2
 
-import java.nio.file.Files
-import java.nio.file.Paths
 import junit.framework.TestCase.assertEquals
 import junit.framework.TestCase.assertSame
 import kotlin.io.path.Path
@@ -32,7 +30,6 @@ import org.dizitart.kno2.serialization.DocumentFormat
 import org.dizitart.kno2.serialization.KotlinXSerializationMapper
 import org.dizitart.kno2.serialization.decodeFromDocument
 import org.dizitart.kno2.serialization.encodeToDocument
-import org.dizitart.no2.common.module.NitriteModule.module
 import org.dizitart.no2.exceptions.ValidationException
 import org.dizitart.no2.mvstore.MVStoreModule
 import org.junit.Test
@@ -164,7 +161,7 @@ class KotlinXSerializationMapperTest {
     fun testModule() {
         val documentFormat = DocumentFormat { allowStructuredMapKeys = true }
         val db = nitrite {
-            repositoryValidation = false
+            validateRepositories = false
             loadModule(MVStoreModule(dbPath))
             loadModule(KotlinXSerializationMapper(documentFormat))
         }
@@ -207,7 +204,7 @@ class KotlinXSerializationMapperTest {
     @Test
     fun testRepositoryValidationDisabled() {
         val db = nitrite {
-            repositoryValidation = false
+            validateRepositories = false
             loadModule(MVStoreModule(dbPath))
             loadModule(KotlinXSerializationMapper)
         }

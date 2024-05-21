@@ -69,7 +69,7 @@ sealed class DocumentFormat(
      */
     fun <T : Any> encodeToDocument(serializer: KSerializer<T>, value: T): Document =
         when (val jsonElement = json.encodeToJsonElement(serializer, value)) {
-            is JsonObject -> jsonElement.toDocument(configuration.allowDeepPut)
+            is JsonObject -> jsonElement.toDocument(!configuration.allowDeepPut)
             else -> throw ObjectMappingException("Can't convert object of type `${value::class.qualifiedName}` to Document")
         }
 
